@@ -2,17 +2,17 @@ import socket
 import ssl
 import threading
 from typing import Callable
-import requests
 
 server = socket.create_server(('', 7777), reuse_port=True)
 
-FORWARD_TO = 'webmatrices.com'
+FORWARD_TO = 'app.erasebg.org'
 
 
 def rewrite(content) -> str:
     content = content.replace('Host: localhost:7777', f'Host: {FORWARD_TO}:443')
     content = content.replace('GET /', f'GET https://{FORWARD_TO}/')
     content = content.replace('HEAD /', f'HEAD https://{FORWARD_TO}/')
+    content = content.replace('Origin: http://localhost:7777', f'Origin: https://{FORWARD_TO}')
     content = content.replace('Connection: keep-alive', 'Connection: close')
     # print(content)
     return content
@@ -23,9 +23,6 @@ def create_ssl_socket(host, port):
     ssl_context = ssl.create_default_context()
     ssl_socket = ssl_context.wrap_socket(client_socket, server_hostname=host)
     return ssl_socket
-
-
-e
 
 
 def handle_client(client):
