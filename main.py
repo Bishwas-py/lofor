@@ -25,19 +25,7 @@ def create_ssl_socket(host, port):
     return ssl_socket
 
 
-def read_all(ssl_socket):
-    response = b''
-    while True:
-        data = ssl_socket.recv(1024)
-        if not data:
-            break
-
-        response += data
-        if data.endswith(b'0\r\n\r\n'):
-            memory_view = memoryview(response)
-            return memory_view[:len(response) - len(b'0\r\n\r\n')].tobytes()
-
-    return response
+e
 
 
 def handle_client(client):
