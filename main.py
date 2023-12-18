@@ -5,7 +5,7 @@ from typing import Callable
 
 server = socket.create_server(('', 7777), reuse_port=True)
 
-FORWARD_TO = 'app.erasebg.org'
+FORWARD_TO = 'webmatrices.com'
 
 
 def rewrite(content) -> str:
