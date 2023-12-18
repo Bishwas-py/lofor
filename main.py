@@ -1,4 +1,8 @@
 import socket
+import ssl
+import threading
+from typing import Callable
+import requests
 
 server = socket.create_server(('', 7777), reuse_port=True)
 
@@ -6,24 +10,66 @@ FORWARD_TO = 'webmatrices.com'
 
 
 def rewrite(content) -> str:
-    content = content.replace('Host: localhost:7777', f'Host: https://{FORWARD_TO}/')
-    print(content)
+    content = content.replace('Host: localhost:7777', f'Host: {FORWARD_TO}:443')
+    content = content.replace('GET /', f'GET https://{FORWARD_TO}/')
+    content = content.replace('HEAD /', f'HEAD https://{FORWARD_TO}/')
+    content = content.replace('Connection: keep-alive', 'Connection: close')
+    # print(content)
     return content
 
 
-while True:
-    client, addr = server.accept()
-    received = client.recv(2024)
-    content = received.decode()
+def create_ssl_socket(host, port):
+    client_socket = socket.create_connection((host, port))
+    ssl_context = ssl.create_default_context()
+    ssl_socket = ssl_context.wrap_socket(client_socket, server_hostname=host)
+    return ssl_socket
+
+
+def read_all(ssl_socket):
+    response = b''
+    while True:
+        data = ssl_socket.recv(1024)
+        if not data:
+            break
+
+        response += data
+        if data.endswith(b'0\r\n\r\n'):
+            memory_view = memoryview(response)
+            return memory_view[:len(response) - len(b'0\r\n\r\n')].tobytes()
+
+    return response
+
+
+def handle_client(client):
+    content = client.recv(2048).decode()
     content = rewrite(content)
+    print('---------- RECEIVED -----------------')
+    print(content)
+    print('------------------------------------')
 
     # Sending content after rewriting
-    client_fetch = socket.create_connection((FORWARD_TO, 443))
-    client_fetch.send(content.encode())
+    ssl_socket = create_ssl_socket(FORWARD_TO, 443)
+    ssl_socket.sendall(content.encode())
 
-    # Receive data from server
-    client_receive = client_fetch.recv(2024)
-    client.send(client_receive)
+    while True:
+        data = ssl_socket.recv(1024)
+        client.send(data)
 
-    client_fetch.close()
+    ssl_socket.close()
     client.close()
+    print('OK')
+
+
+def run(context, send_header_callback: Callable, modify_receive_headers: Callable):
+    while True:
+        client, addr = server.accept()
+        threading.Thread(target=handle_client, args=(client,)).start()
+
+
+def _send_headers(context, headers: dict):
+    target_host = context['Host']
+    headers['Host'] = target_host
+    return headers
+
+
+run({'Host': 'sagasab.com'}, _send_headers, None)
