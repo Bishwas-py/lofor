@@ -56,8 +56,8 @@ def scan_headers(sock: socket.socket) -> Tuple[bytes, bytes]:
         if b'\r\n\r\n' in chunk:
             break
 
-    spitted_header_parts = data.split(b'\r\n\r\n', 1)
-    return spitted_header_parts[0], spitted_header_parts[1]
+    header_content_parts = data.split(b'\r\n\r\n', 1)
+    return header_content_parts[0], header_content_parts[1]
 
 
 config_manager = ConfigManager()
