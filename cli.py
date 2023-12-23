@@ -21,7 +21,7 @@ To start:
 
 To forward:
  - lofor forward / http://localhost:5173
- - lofor forward /api/ https://api.example.com/api/
+ - lofor forward /api/ https://example.com/api/
 
 To list forwards:
  - lofor list
@@ -87,8 +87,8 @@ def handle_list():
     print('---------------------------------------------\033[0m')
 
     print('\033[94m', end='')
-    for (forward_from, forward_to) in forwards.items():
-        print(f'{forward_from} ===> {forward_to}')
+    for (forward_from, details) in forwards.items():
+        print(f'{forward_from} ===> {details.get("proxy_to")}')
 
     print('\033[0m', end='')
     if len(forwards.items()):

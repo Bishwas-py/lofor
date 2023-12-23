@@ -46,7 +46,13 @@ class ConfigManager:
             raise SchemeNotProvidedException('URL must start with http or https')
 
         config = self.read()
+
+        # Put data
         config['forwards'][forward_from] = {'proxy_to': forward_to, 'https': self.is_https(forward_to)}
+
+        # Rearrange forward pattern
+        sorted_forwards = dict(sorted(config['forwards'].items(), reverse=True))
+        config['forwards'] = sorted_forwards
         self.save(config)
 
     def remove_forward(self, forward_from: str) -> bool:

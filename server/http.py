@@ -60,14 +60,35 @@ def scan_headers(sock: socket.socket) -> Tuple[bytes, bytes]:
     return header_content_parts[0], header_content_parts[1]
 
 
+def read_body(client_socket, content_length: int, initial_bytes: bytes) -> bytes:
+    data = initial_bytes
+
+    while len(data) != content_length:
+        chunk = client_socket.recv(1024)
+        if not chunk:
+            break
+
+        data += chunk
+
+    return data
+
+
 config_manager = ConfigManager()
 config = config_manager.read()
 forwards: dict[str, dict] = config.get('forwards')
 
 
-def get_matching_host_config(path: str) -> Optional[dict]:
-    for (forward_path, data) in forwards.items():
-        if path.startswith(forward_path):
+def get_matching_host_config(host: str, path: str) -> Optional[dict]:
+    for (forward_rule, data) in forwards.items():
+        """
+        Path always starts with forward slash '/'
+        Where as host level forwarding is without slash.
+        """
+
+        if host.startswith(forward_rule):
+            return data
+
+        if forward_rule.startswith('/') and path.startswith(forward_rule):
             return data
 
     return None
@@ -83,15 +104,18 @@ def get_host(path: str) -> Tuple[str | None, int]:
     return parsed.hostname, port
 
 
-def modify_request(request: Request, path: str, host: str, port: int, https: bool) -> Request:
-    if https:
-        request.path = f'https://{host}{path}'
-        request.headers['Origin'] = f'https://{host}'
+def modify_request(request: Request, host: str, port: int, https: bool, is_ws: bool) -> Request:
+    if not is_ws:
+        if https:
+            request.headers['Origin'] = f'https://{host}'
 
-    else:
-        request.headers['Origin'] = host
+        else:
+            request.headers['Origin'] = host
 
     request.headers['Host'] = f'{host}:{port}'
-    request.headers['Connection'] = 'close'
     request.headers['Referer'] = host
+
+    if not is_ws:
+        request.headers['Connection'] = 'close'
+
     return request
