@@ -28,7 +28,7 @@ lofor forward localhost http://localhost:3000
 ```
 
 ### Start lofor server
-
+The server will be listening at [http://localhost:7777](http://localhost:7777)
 ```bash
 lofor start
 ```
