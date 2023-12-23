@@ -107,10 +107,12 @@ def handle_client(client_socket: socket.socket):
             print('Starting new threads for websocket.')
             receive_from_target_server = threading.Thread(target=handle_receive_from_target_server,
                                                           args=(forward_client, client_socket))
+            receive_from_target_server.daemon = True
             receive_from_target_server.start()
 
             receive_from_client = threading.Thread(target=handle_receive_from_request_client,
                                                    args=(client_socket, forward_client))
+            receive_from_client.daemon = True
             receive_from_client.start()
 
         while not is_websocket:
