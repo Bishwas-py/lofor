@@ -96,8 +96,23 @@ def handle_list():
 
 
 def handle_start():
-    print('Listening on http://127.0.0.1:7777')
-    serve.start()
+    if len(sys.argv) >= 3:
+        host_port = sys.argv[2]
+        host, port = host_port.split(':')
+
+        if not host or not port:
+            print('Invalid host/port. Hint: lofor start 0.0.0.0:7777')
+
+        try:
+            port = int(port)
+        except TypeError:
+            print('Port must be an integer')
+    else:
+        host = '127.0.0.1'
+        port = 7777
+
+    print(f'Listening on http://{host}:{port}')
+    serve.start(host, port)
 
 
 def handle_cli():

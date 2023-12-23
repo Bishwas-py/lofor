@@ -5,11 +5,9 @@ from typing import Union
 
 from server import http
 
-PORT = 7777
 
-
-def start():
-    server = socket.create_server(('', PORT))
+def start(host, port):
+    server = socket.create_server((host, port))
     server.listen()
 
     while True:
@@ -50,21 +48,27 @@ def create_socket_client(host, port, is_https: bool) -> Union[socket.socket | ss
 
 
 def handle_receive_from_target_server(receive_from: socket.socket, client_socket: socket.socket):
-    while True:
-        chunk = receive_from.recv(1024)
-        if not chunk:
-            break
+    try:
+        while True:
+            chunk = receive_from.recv(1024)
+            if not chunk:
+                break
 
-        client_socket.sendall(chunk)
+            client_socket.sendall(chunk)
+    except socket.error:
+        pass
 
 
 def handle_receive_from_request_client(client_socket: socket.socket, target_socket: socket.socket):
-    while True:
-        chunk = client_socket.recv(1024)
-        if not chunk:
-            break
+    try:
+        while True:
+            chunk = client_socket.recv(1024)
+            if not chunk:
+                break
 
-        target_socket.sendall(chunk)
+            target_socket.sendall(chunk)
+    except socket.error:
+        pass
 
 
 def handle_client(client_socket: socket.socket):
@@ -92,8 +96,6 @@ def handle_client(client_socket: socket.socket):
     try:
         forward_client = create_socket_client(host, port, https)
         forward_client.sendall(modified_request.header_bytes())
-        if is_websocket:
-            print(modified_request.header_bytes())
 
         """
         Read request body. The request like POST can contain the body.
