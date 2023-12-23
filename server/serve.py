@@ -52,8 +52,6 @@ def create_socket_client(host, port, is_https: bool) -> Union[socket.socket | ss
 def handle_receive_from_target_server(receive_from: socket.socket, client_socket: socket.socket):
     while True:
         chunk = receive_from.recv(1024)
-
-        print('RECEIVED FROM TARGET')
         if not chunk:
             break
 
@@ -63,9 +61,6 @@ def handle_receive_from_target_server(receive_from: socket.socket, client_socket
 def handle_receive_from_request_client(client_socket: socket.socket, target_socket: socket.socket):
     while True:
         chunk = client_socket.recv(1024)
-
-        print('RECEIVED FROM REQUEST')
-
         if not chunk:
             break
 
