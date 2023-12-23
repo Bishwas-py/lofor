@@ -57,7 +57,7 @@ class ConfigManager:
 
     def remove_forward(self, forward_from: str) -> bool:
         config = self.read()
-        has_key = config['forwards'][forward_from] is not None
+        has_key = config['forwards'].get(forward_from) is not None
         if has_key:
             del config['forwards'][forward_from]
 
