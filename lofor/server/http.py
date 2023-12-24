@@ -7,6 +7,10 @@ from lofor.manager.config import ConfigManager
 
 
 class Request:
+    """
+    A request object for storing request information.
+    """
+
     def __init__(self, raw_headers: bytes):
         self.headers = OrderedDict()
 
@@ -22,13 +26,27 @@ class Request:
             name, value = header.split(':', 1)
             self.headers[name.strip()] = value.strip()
 
-    def set(self, name, value) -> None:
+    def set_headers(self, name, value) -> None:
+        """
+        Set new header or update existing one.
+        """
+
         self.headers[name] = value
 
-    def remove(self, name) -> None:
-        del self.headers[name]
+    def remove_headers(self, name) -> None:
+        """
+        Remove headers if exists.
+        """
 
-    def build(self) -> str:
+        headers_val = self.headers.get(name)
+        if headers_val:
+            del self.headers[name]
+
+    def build_headers(self) -> str:
+        """
+        Construct request headers back to text.
+        """
+
         _headers = f'{self.method} {self.path} {self.http_version}\r\n'
         for (name, value) in self.headers.items():
             _headers += f'{name}: {value}\r\n'
@@ -37,13 +55,21 @@ class Request:
         return _headers
 
     def header_bytes(self) -> bytes:
-        return self.build().encode()
+        """
+        Headers as bytes object.
+        """
+
+        return self.build_headers().encode()
 
     def __str__(self) -> str:
-        return self.build()
+        return self.build_headers()
 
 
 def scan_headers(sock: socket.socket) -> Tuple[bytes, bytes]:
+    """
+    Scans for http headers and returns header bytes and partial body bytes if any.
+    """
+
     data = b''
 
     while True:
@@ -66,7 +92,11 @@ def scan_headers(sock: socket.socket) -> Tuple[bytes, bytes]:
     return header_bytes, body_bytes
 
 
-def read_body(client_socket, content_length: int, initial_bytes: bytes) -> bytes:
+def read_body(client_socket: socket.socket, content_length: int, initial_bytes: bytes) -> bytes:
+    """
+    Read bytes from the client socket wit the given content length specified. Return bytes with combination to initial bytes.
+    """
+
     data = initial_bytes
 
     while len(data) != content_length:
@@ -85,6 +115,11 @@ forwards: dict[str, dict] = config.get('forwards')
 
 
 def get_matching_host_config(host: str, path: str) -> Optional[dict]:
+    """
+    Returns the most matching host config for the current host and path.
+    Host level matching will have the more priority than the path matching.
+    """
+
     for (forward_rule, data) in forwards.items():
         """
         Path always starts with forward slash '/'
@@ -100,8 +135,12 @@ def get_matching_host_config(host: str, path: str) -> Optional[dict]:
     return None
 
 
-def get_host(path: str) -> Tuple[str | None, int]:
-    parsed = urlparse(path)
+def get_hostname_and_port(url: str) -> Tuple[str | None, int]:
+    """
+    Returns parsed hostname and port as Tuple.
+    """
+
+    parsed = urlparse(url)
 
     port = parsed.port
     if not parsed.port and parsed.scheme == 'https':
@@ -111,17 +150,21 @@ def get_host(path: str) -> Tuple[str | None, int]:
 
 
 def modify_request(request: Request, host: str, port: int, https: bool, is_ws: bool) -> Request:
+    """
+    Modifies request headers for forwarding.
+    """
+
     if not is_ws:
         if https:
-            request.headers['Origin'] = f'https://{host}'
+            request.set_headers('Origin', f'https://{host}')
 
         else:
-            request.headers['Origin'] = f'http://{host}:{port}'
+            request.set_headers('Origin', f'http://{host}:{port}')
 
-    request.headers['Host'] = f'{host}:{port}'
-    request.headers['Referer'] = host
+    request.set_headers('Host', f'{host}:{port}')
+    request.set_headers('Referer', host)
 
     if not is_ws:
-        request.headers['Connection'] = 'close'
+        request.set_headers('Connection', 'close')
 
     return request
