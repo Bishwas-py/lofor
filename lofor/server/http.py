@@ -57,7 +57,13 @@ def scan_headers(sock: socket.socket) -> Tuple[bytes, bytes]:
             break
 
     header_content_parts = data.split(b'\r\n\r\n', 1)
-    return header_content_parts[0], header_content_parts[1]
+    header_bytes = header_content_parts[0]
+    body_bytes = b''
+
+    if len(header_content_parts) > 1:
+        body_bytes = header_content_parts[1]
+
+    return header_bytes, body_bytes
 
 
 def read_body(client_socket, content_length: int, initial_bytes: bytes) -> bytes:
