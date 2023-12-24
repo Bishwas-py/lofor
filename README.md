@@ -14,6 +14,7 @@ This becomes more complex when you use two different frameworks for backend and 
 In lofor, you can map multiple hosts to single one.
 
 ### Installation
+
 ```bash
 pip install lofor
 ```
@@ -33,7 +34,9 @@ lofor forward localhost http://localhost:3000
 ```
 
 ### Start lofor server
+
 The server will be listening at [http://localhost:7777](http://localhost:7777)
+
 ```bash
 lofor start
 ```
