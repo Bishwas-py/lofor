@@ -12,7 +12,7 @@ entry = """\033[92m
 +--------------------------------------------+
 
 The reverse proxy for development.
-Version: 0.1
+CLI version: 0.1
 
 Commands:
 ----------------------------------------------
