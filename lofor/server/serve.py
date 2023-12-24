@@ -91,7 +91,7 @@ def handle_client(client_socket: socket.socket):
 
     modified_request = http.modify_request(request, host, port, https, is_websocket)
     scheme = 'https' if https else 'http'
-    print(f'\033[94mForwarding http://{original_host}{request.path} ==> {scheme}://{host}{request.path}\033[0m')
+    print(f'\033[94mForwarding http://{original_host}{request.path} ==> {scheme}://{host}:{port}{request.path}\033[0m')
 
     try:
         forward_client = create_socket_client(host, port, https)

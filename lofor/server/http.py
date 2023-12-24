@@ -116,7 +116,7 @@ def modify_request(request: Request, host: str, port: int, https: bool, is_ws: b
             request.headers['Origin'] = f'https://{host}'
 
         else:
-            request.headers['Origin'] = host
+            request.headers['Origin'] = f'http://{host}:{port}'
 
     request.headers['Host'] = f'{host}:{port}'
     request.headers['Referer'] = host
