@@ -3,7 +3,7 @@ from typing import Tuple, Optional
 from collections import OrderedDict
 from urllib.parse import urlparse
 
-from manager.config import ConfigManager
+from lofor.manager.config import ConfigManager
 
 
 class Request:

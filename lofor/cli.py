@@ -1,8 +1,8 @@
 import sys
 from typing import Callable
 
-from manager.config import ConfigManager, SchemeNotProvidedException
-from server import serve
+from lofor.manager.config import ConfigManager, SchemeNotProvidedException
+from lofor.server import serve
 
 entry = """\033[92m
 +--------------------------------------------+

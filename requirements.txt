@@ -1,0 +1,4 @@
+build==1.0.3
+lofor==0.0.1
+packaging==23.2
+pyproject_hooks==1.0.0

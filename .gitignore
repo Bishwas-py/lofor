@@ -1,4 +1,6 @@
 venv
+dist/
+lofor.egg-info/
 __pycache__/
 .idea/
 .configs/

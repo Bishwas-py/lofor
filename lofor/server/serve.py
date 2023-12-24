@@ -3,7 +3,7 @@ import ssl
 import threading
 from typing import Union
 
-from server import http
+from lofor.server import http
 
 
 def start(host, port):

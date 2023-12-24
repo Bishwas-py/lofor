@@ -1,3 +1,9 @@
+Metadata-Version: 2.1
+Name: lofor
+Version: 0.0.1
+Summary: Lofor is a lightweight development server which acts as a reverse proxy to solve your cors problems.
+Description-Content-Type: text/markdown
+
 # Lofor - A reverse proxy for development
 
 Lofor is a lightweight development server which acts as reverse proxy to solve your cors header problems.
