@@ -56,7 +56,7 @@ def handle_receive_from_target_server(receive_from: socket.socket, client_socket
 
             client_socket.sendall(chunk)
     except socket.error:
-        pass
+        client_socket.close()
 
 
 def handle_receive_from_request_client(client_socket: socket.socket, target_socket: socket.socket):
@@ -68,7 +68,7 @@ def handle_receive_from_request_client(client_socket: socket.socket, target_sock
 
             target_socket.sendall(chunk)
     except socket.error:
-        pass
+        target_socket.close()
 
 
 def handle_client(client_socket: socket.socket):
