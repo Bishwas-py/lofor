@@ -98,15 +98,22 @@ def handle_list():
 def handle_start():
     if len(sys.argv) >= 3:
         host_port = sys.argv[2]
+
+        if host_port and ':' not in host_port:
+            print('Please specify protocol.')
+            return
+
         host, port = host_port.split(':')
 
         if not host or not port:
             print('Invalid host/port. Hint: lofor start 0.0.0.0:7777')
 
-        try:
+        if port.isnumeric():
             port = int(port)
-        except TypeError:
+        else:
             print('Port must be an integer')
+            return
+
     else:
         host = '127.0.0.1'
         port = 7777

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lofor"
-version = "0.0.2"
+version = "0.0.3"
 description = "Lofor is a lightweight development server which acts as a reverse proxy to solve your cors problems."
 dynamic = ['readme']
 

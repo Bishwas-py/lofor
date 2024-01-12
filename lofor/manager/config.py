@@ -10,7 +10,7 @@ class SchemeNotProvidedException(Exception):
 
 class ConfigManager:
     def __init__(self):
-        self.config_dir = Path(os.getcwd()).joinpath('.configs/')
+        self.config_dir = Path(os.getcwd()).joinpath('.lofor/')
 
         if not self.config_dir.exists():
             self.config_dir.mkdir()
