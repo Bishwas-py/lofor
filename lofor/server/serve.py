@@ -47,7 +47,7 @@ def handle_path_not_configured(client_socket: socket.socket):
 
     client_socket.sendall(response.encode())
 
-    # Keep alive not supported. Close connection, so that server knows all the data has been received.
+    # Keep alive not supported. Close connection, so that client knows all the data has been received.
     client_socket.close()
 
 
